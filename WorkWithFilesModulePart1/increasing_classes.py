@@ -5,15 +5,12 @@
 import csv
 
 with open('student_counts.csv', 'r', encoding='utf-8') as file:
-    rows, result = csv.DictReader(file), []
-    for row in rows:
-        year = list(row.items())[0]
-        classes = list((cl.split('-'), cnt) for cl, cnt in row.items())[1:]
-        sort_classes = sorted(classes, key=lambda x: (int(x[0][0]), x[0][1]))
-        d = {'-'.join(cl[0]): cl[1] for cl in sort_classes}
-        result.append({**{year[0]: year[1]}, **d})
+    rows = list(csv.DictReader(file))
+    classes = [i.split('-') for i in rows[0]][1:]
+    classes.sort(key=lambda x: (int(x[0]), x[1]))
+    year_clas = ['year'] + ['-'.join(i) for i in classes]
 
 with open('sorted_student_counts.csv', 'w', encoding='utf-8', newline='') as out:
-    wr = csv.DictWriter(out, fieldnames=list(result[0].keys()))
+    wr = csv.DictWriter(out, fieldnames=year_clas)
     wr.writeheader()
-    wr.writerows(result)
+    wr.writerows(rows)
